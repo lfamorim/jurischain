@@ -2,24 +2,14 @@ import { Builder, Capabilities } from 'selenium-webdriver'
 
 const tags = ['jurischain']
 
-export type BuilderConfiguration = {
-  browserName: string
-  browserVersion: string
-  platformName: string
-  screenWidth: number
-  screenHeight: number
-  screenshotHeight: number
-  screenshotWidth: number
-}
-
-export const ie11: BuilderConfiguration = {
-  browserName: 'internet explorer',
-  browserVersion: '11',
-  platformName: 'Windows 10',
-  screenWidth: 1280,
-  screenHeight: 960,
-  screenshotWidth: 1264,
-  screenshotHeight: 874,
+export interface BuilderConfiguration {
+  readonly browserName: string
+  readonly browserVersion: string
+  readonly platformName: string
+  readonly screenWidth: number
+  readonly screenHeight: number
+  readonly screenshotHeight: number
+  readonly screenshotWidth: number
 }
 
 export const latestChrome: BuilderConfiguration = {
@@ -44,8 +34,8 @@ export const latestFirefox: BuilderConfiguration = {
 
 export const latestSafari: BuilderConfiguration = {
   browserName: 'safari',
-  browserVersion: '12',
-  platformName: 'macOS 10.13',
+  browserVersion: 'latest',
+  platformName: 'macOS 13',
   screenWidth: 1280,
   screenHeight: 960,
   screenshotWidth: 1280,
@@ -53,10 +43,16 @@ export const latestSafari: BuilderConfiguration = {
 }
 
 export async function createDriver(
-  withCapabilities: {} | Capabilities = {},
+  withCapabilities: Record<string, unknown> | Capabilities = {},
   envName?: string,
-  { browserName, browserVersion, platformName, screenWidth, screenHeight }: BuilderConfiguration = latestChrome,
+  config: BuilderConfiguration = latestChrome,
 ) {
+  const { browserName, browserVersion, platformName, screenWidth, screenHeight } = config
+
+  if (!process.env.SAUCELABS_USERNAME || !process.env.SAUCELABS_ACCESSKEY) {
+    throw new Error('SAUCELABS_USERNAME and SAUCELABS_ACCESSKEY environment variables are required')
+  }
+
   return new Builder()
     .withCapabilities({
       browserName,
@@ -70,7 +66,7 @@ export async function createDriver(
         name: envName,
         maxDuration: 3600,
         idleTimeout: 1000,
-        tags: tags,
+        tags,
         screenResolution: `${screenWidth}x${screenHeight}`,
       },
     })

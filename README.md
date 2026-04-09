@@ -1,141 +1,220 @@
-# JurisChain
-![browser](./images/browser.png)
+<div align="center">
 
-Instead of challenging the humans who are working at the terminals, it would be better to challenge the terminals themselves. It's all about balancing out the client's workload so they won't be a victim of a DDoS attack. Inspired by Blockchain technology.
+# @credithub/jurischain
 
-## About
+**SHA3-based Proof-of-Work captcha for fair access control.**
+No tracking. No third parties. Fully open source.
 
-One knows that the computers which serve the publics' courtrooms have suffered from overloads and [DDoS (distributed denial of service) attacks](https://pt.wikipedia.org/wiki/Ataque_de_nega%C3%A7%C3%A3o_de_servi%C3%A7o). Those efforts harm the country's web portal by temporarily shutting it down, bothering the Brazilian judiciary, the lawyers, as well as several different parts of law processes. 
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Build](https://img.shields.io/badge/build-Docker-2496ED?logo=docker&logoColor=white)](docker-compose.yml)
+[![Node](https://img.shields.io/badge/node-%3E%3D14-339933?logo=node.js&logoColor=white)](bindings/node)
+[![PHP](https://img.shields.io/badge/php-8.x-777BB4?logo=php&logoColor=white)](bindings/php)
 
-Techniques such as sophisticated firewalls and captchas on the other hand haven't been efficient when it comes to controlling the publics' access, thanks to society's natural process of technological innovation. ([1](https://projurisbrasil.jusbrasil.com.br/artigos/189717091/saiba-o-que-sao-os-captchas-e-como-e-possivel-dribla-los-na-hora-de-fazer-um-acompanhamento-processual-mais-rapido-e-eficiente?ref=feed), [2](https://frradvogados.jusbrasil.com.br/artigos/595582536/big-data-e-acesso-a-informacao-a-legalidade-do-uso-de-bots-robos?ref=feed)) Along with that, several different companies and citizens consume this data without worrying about the stability of the judiciary, be it because of malpractice or disparity.
+</div>
 
-We remind you, that solutions solutions such as NoCaptcha, from companies abroad, have gotten monetary profit from the citizens', lawyers' and the judiciary's time to solve problems from a computational perspective, monitoring the users with the objects of selling advertisements, and providing the problem and solution simultaneously for access control. The users of the country's judiciary web portal instruct the computers of companies from abroad and to those we let loose total and irrestricted access to public information from our country.  
+---
 
-On behalf of this, we've created a Blockchain based solution that without the expense of public resources nor the time of public workers, infrastructure and safety costs so that the people and the companies can access the courtrooms in a proportional way. The solutions aims to be simple and more efficient than international ones by being completed internalised, open, being in [agreement with the article 4 of the law number 11.419](http://www.planalto.gov.br/ccivil_03/_Ato2004-2006/2006/Lei/L11419.htm#art14)
+## Why JurisChain?
 
-> Article 14. The systems to be developed by the public bodies of the judiciary should use, preferably, open source programs, accessible in an uninterruptible manner by the means of a worldwide network of computers, priorizing their standardization. 
+Traditional captchas (reCAPTCHA, hCaptcha) track users, sell data, and depend on external servers. JurisChain takes a different approach: instead of challenging *humans*, it challenges the *machine*.
 
-## About
+The client must solve a SHA3-256 Proof-of-Work puzzle before submitting a request. This makes automated abuse computationally expensive while keeping the user experience seamless — no image grids, no cookies, no surveillance.
 
-![keccak](https://keccak.team/assets/img/colors/blue/logo_big.png)
+> **Inspired by the Brazilian judiciary's need** for open, self-hosted access control that complies with [Lei 11.419, Art. 14](http://www.planalto.gov.br/ccivil_03/_Ato2004-2006/2006/Lei/L11419.htm#art14) — mandating open source and uninterrupted access.
 
-The solutions have been built over the work of the [Keccak team](https://keccak.team/), winner of the [NIST (National Institute of Standards and Technology) competition](https://www.nist.gov/), replacing the SHA-1 and SHA-2 predecessors. This is an international standard and has been chosen precisely thanks to its security and conformity, not benefitting one specific user in detriment of the other. Like this, encouraging the usage of fair consumption of the platforms that implement the solution. 
+## How It Works
 
-1. https://csrc.nist.gov/csrc/media/projects/hash-functions/documents/keccak-slides-at-nist.pdf
+```
+┌──────────┐       seed + difficulty       ┌──────────┐
+│  Server   │ ───────────────────────────▸ │  Client   │
+│           │                              │           │
+│           │                              │  SHA3-256 │
+│           │                              │  PoW loop │
+│           │       solution hash          │     ⏳    │
+│  verify() │ ◂─────────────────────────── │           │
+└──────────┘                              └──────────┘
+```
 
-## Portability- Usage of Public APIs, Apps, Web Portals and Infrastructure.
+1. **Server** generates a random seed and chooses a difficulty (1–255)
+2. **Client** receives the challenge and iterates SHA3-256 hashes until the result meets the difficulty threshold
+3. **Client** sends the solution hash back to the server
+4. **Server** verifies in O(1) — a single hash comparison
 
-![C Language](./images/c_128x128.png)
+Higher difficulty = exponentially more work for the client, linearly tunable by the server.
 
-The implementation is made in C (a low-level programming language), guaranteeing that all the platforms profit from the technology thanks to its portability. The challenge can be used by public APIs, apps or web portals, avoiding the overload of services.
+## Features
 
-> The core C language is extremely portable. The standard Unix implementation is the GNU C compiler, which is ubiquitous not only in open-source Unixes but modern proprietary Unixes as well. GNU C has been ported to Windows and classic MacOS, but is not widely used in either environment because it lacks portable bindings to the native GUI.
-> 
-> The standard I/O library, mathematics routines, and internationalization support are portable across all C implementations. File I/O, signals, and process control are portable across Unixes provided one takes care to use only the modern APIs described in the Single Unix Specification; older C code often has thickets of preprocessor conditionals for portability, but those handle legacy pre-POSIX interfaces from older proprietary Unixes that are obsolete or close to it in 2003.
-> 
-> C portability starts to be a more serious problem near IPC, threads, and GUI interfaces. We discussed IPC and threads portability issues in Chapter 7. The real practical problem is GUI toolkits. A number of open-source GUI toolkits are universally portable across modern Unixes and to Windows and classic MacOS as well — Tk, wxWindows, GTK, and Qt are four well-known ones with source code and documentation readily discoverable by Web search. But none of them is shipped with all platforms, and (for reasons more legal than technical) none of these offers the native-GUI look and feel on all platforms. We gave some guidelines for coping in Chapter 15.
-> 
-> Volumes have been written on the subject of how to write portable C code. This book is not going to be one of them. Instead, we recommend a careful reading of Recommended C Style and Coding Standards [Cannon] and the chapter on portability in The Practice of Programming [Kernighan-Pike99].
+| Feature | Description |
+|---|---|
+| **Privacy-first** | Zero cookies, fingerprinting, or external requests |
+| **Portable** | Header-only C library — runs everywhere C compiles |
+| **Multi-platform** | Bindings for Browser (WASM/ASM.js), Node.js, PHP 8, Python |
+| **NIST standard** | SHA3-256 (Keccak) — winner of the NIST hash competition |
+| **Dockerized** | One-command build, test, and serve via Docker Compose |
+| **Tunable** | Difficulty 1–255, exponential scaling of client work |
 
-[1] http://www.catb.org/~esr/writings/taoup/html/ch17s05.html
+## Quick Start
 
-### Prepared for the Web
+### Docker (recommended)
 
-![EMCC](./images/Emscripten_logo_full.png)
+```bash
+./build.sh build                 # Build ASM.js bundle
+./build.sh test                  # Run all tests (PHP + Node + Python + ASM.js)
+./build.sh serve                 # Serve demo → http://localhost:8080
+```
 
-We use EMCC (Emscripten Compiler Frontend) to deliver a fast code code to the browsers, so that they'll be highly efficient at the challenges that come with the challenge of bringing an excellent user experience.
+### Individual tests
 
-## API
+```bash
+./build.sh test-php              # PHP 8 extension tests
+./build.sh test-node             # Node.js native addon tests
+./build.sh test-python           # Python smoke tests
+./build.sh test-asm              # ASM.js CLI tests
+```
 
-### Web Browser
+### From source (no Docker)
+
+```bash
+make cli                         # Native CLI solver
+make all                         # Emscripten ASM.js + bundle
+sudo make install                # Install header to /usr/local/include
+```
+
+## API Reference
+
+### Browser — Promise API
+
 ```html
-  <link href="./style.css" rel="stylesheet" type="text/css" />
-  <script>
-    /* Challenge Configuration */
-    window.jurischain = {
-      seed: 'TrueRandomValue',
-      difficulty: 10,
-    };
-    /* generates an event when solved */
-    document.addEventListener('jurischain', ({ detail: response }) => console.log(response));
-  </script>
-  <!-- Elemento -->
-  <div id="jurischain-captcha"></div>
-  <script src="./jurischain.js"></script>
+<link href="style.css" rel="stylesheet" />
+<div id="jurischain-captcha"></div>
+<script src="dist/jurischain-bundle.js"></script>
+<script>
+  const hash = await solveJurischain({
+    seed: 'server-generated-random-value',
+    difficulty: 10,
+    timeout: 30000,
+  });
+  // POST hash to server for verification
+</script>
 ```
 
-![on-browser](./images/photo.jpg)
+### C — Core Library
 
-### C
 ```c
-void jurischain_gen(jurischain_ctx_t *challenge, uint8_t difficulty, const void *seed, size_t inlen);
+#include "jurischain.h"
 
-- Creates a new challenge with a certain degree of complexity and a seed.
-```
-```c
-int jurischain_verify(jurischain_ctx_t *challenge)
+// Generate challenge
+jurischain_ctx_t ctx;
+jurischain_gen(&ctx, difficulty, seed, seed_len);
 
-- Receives a pointer with a challenge and verifies if it can solve the challenge, returning to 1 if it solves it or 0 in case it doesn't.
-```
-```c
-int jurischain_try(jurischain_ctx_t *challenge)
+// Solve (client-side)
+while (!jurischain_try(&ctx));
 
-- Receives a pointer with a challenge and tries to solve it, returning 1 in case it does and 0 if it doesn't. 
-```
-### NodeJS
-![Node Logo](https://software.intel.com/sites/default/files/managed/fa/a0/Runtime-logo-Node.jpg)
-```sh
-$ make
-# sudo make install
-# sudo ldconfig
-$ cd interfaces/node
-$ npm install
+// Verify (server-side, O(1))
+int valid = jurischain_verify(&ctx);  // 1 = valid, 0 = invalid
 ```
 
+### Node.js — Native Addon
 
-### PHP
-![PHP Logo](./images/new-php-logo.png)
-
-#### Instalação
-
-```sh
-$ make
-# sudo make install
-# sudo ldconfig
-$ cd interfaces/php
-$ phpize
-$ ./configure
-$ make
-$ make test
-# sudo make install
+```bash
+npm install @credithub/jurischain-node
 ```
 
-#### Usage
+```js
+const { Jurischain } = require('@credithub/jurischain-node');
+
+// Generate + solve
+const challenge = new Jurischain(10, 'random-seed');
+while (!challenge.solveStep());
+
+// Read solution
+const hash = challenge.readChallenge();
+
+// Verify on server
+const verifier = new Jurischain(10, 'random-seed');
+verifier.challengeResponse(hash);
+console.log(verifier.verify());  // true
+```
+
+### PHP 8 — Extension
 
 ```php
-/**Creates a new challenge*/
-$seed = openssl_random_pseudo_bytes(32);
-$difficulty = 10;
+// Generate + solve
+$challenge = new Jurischain($difficulty, $seed);
+while (!$challenge->solve());
+$hash = $challenge->getChallenge();
 
-$jurischain = jurischain_gen($difficulty, $seed);
-while (!jurischain_try($jurischain));
-var_dump(jurischain_get($jurischain));
+// Verify on server
+$verifier = new Jurischain($difficulty, $seed);
+$verifier->setResponse($_POST['jurischain']);
+$valid = $verifier->verify();  // bool(true)
+```
 
-$jurischain_new = jurischain_gen($difficulty, $seed);
-jurischain_set($jurischain_new, $_POST["jurischain"]);
-var_dump(jurischain_verify($jurischain_new));
+## Configuration
+
+| Parameter | Type | Range | Description |
+|---|---|---|---|
+| `seed` | `string` | non-empty | Random value generated per-request by the server |
+| `difficulty` | `uint8` | 1 – 255 | Number of leading zero bits required in the hash |
+| `timeout` | `ms` | > 0 | Browser API only — max solve time before rejection |
+
+### Difficulty guidelines
+
+| Difficulty | Avg. tries | Typical time | Use case |
+|---|---|---|---|
+| 8–10 | ~500 | < 1s | Login forms, page views |
+| 14–16 | ~30k | 2–5s | API rate limiting |
+| 18–20 | ~200k | 10–30s | Heavy abuse prevention |
+
+## Project Structure
+
+```
+@credithub/jurischain
+├── include/              C header (header-only library)
+│   └── jurischain.h
+├── src/                  C source files
+│   ├── cli.c             Native CLI solver
+│   └── browser.c         Emscripten browser entry
+├── bindings/
+│   ├── browser/          JS Promise wrapper + bundle API
+│   ├── node/             Node.js native addon (NAN + node-gyp)
+│   └── php/              PHP 8 extension (phpize)
+├── examples/
+│   └── web/              Interactive browser demo
+├── tests/                Integration & E2E tests
+├── docker/               Dockerfiles + nginx config
+├── scripts/              Utility scripts (genstats.py)
+└── docs/images/          Documentation assets
 ```
 
 ## Statistics
 
-![on-browser](./images/multicomplexity.jpg)
+![Difficulty vs Average Tries](./docs/images/multicomplexity.jpg)
 
-To generate a chart of the number of tries/degree of dificulty of the challenge, do the following: 
+Generate benchmark charts:
 
 ```bash
-make all
-virtualenv .env/
 pip install -r requirements.txt
-python3 genstats.py
+python3 scripts/genstats.py       # Results saved to stats/
 ```
-The results will be in the folder `stats/`. 
+
+## Security Considerations
+
+- The **seed must be cryptographically random** and unique per request — reusing seeds allows replay attacks
+- Verification is **server-side only** — never trust client-reported success
+- Difficulty should be **tuned per endpoint** — higher for sensitive operations, lower for reads
+- The SHA3-256 hash is **not reversible** — the server verifies by recomputing, not storing solutions
+
+## Contributing
+
+```bash
+git clone https://github.com/credithub/jurischain.git
+cd jurischain
+./build.sh test                  # Verify everything passes
+```
+
+PRs welcome. Please ensure all tests pass before submitting.
+
+## License
+
+[MIT](LICENSE) — created by [CreditHub](https://credithub.com.br), maintained by [Lucas Fernando Amorim](https://github.com/lfamorim)

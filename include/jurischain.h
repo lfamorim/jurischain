@@ -1,12 +1,11 @@
 #ifndef H_JURISCHAIN
 #define H_JURISCHAIN
 
-#define JURISCHAIN_VERSION '1.0.0'
+#define JURISCHAIN_VERSION "1.0.0"
 
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
-#include <strings.h>
 
 #ifndef KECCAKF_ROUNDS
 #define KECCAKF_ROUNDS 24
@@ -21,7 +20,6 @@
 #endif
   
 
-#define memcpy __builtin_memcpy
 
 /* state context */
 typedef struct {
@@ -180,7 +178,7 @@ int sha3_final(void *md, sha3_ctx_t *c) {
 void *sha3(const void *in, size_t inlen, void *md, int mdlen) {
   sha3_ctx_t sha3;
 
-  bzero(&sha3, sizeof(sha3));
+  memset(&sha3, 0, sizeof(sha3));
 
   sha3_init(&sha3, mdlen);
   sha3_update(&sha3, in, inlen);
@@ -190,9 +188,8 @@ void *sha3(const void *in, size_t inlen, void *md, int mdlen) {
 }
 
 void jurischain_gen(jurischain_ctx_t *challenge, uint8_t d, const void *seed, size_t inlen) {
-  uint8_t rand_hash[HASH_LEN] = {
-      0,
-  };
+  uint8_t rand_hash[HASH_LEN] = { 0, };
+  if (!challenge || !seed || inlen == 0) return;
   memset(challenge, 0, sizeof(jurischain_ctx_t));
   sha3(seed, inlen, rand_hash, HASH_LEN);
   memcpy(challenge->seed, rand_hash, sizeof(rand_hash));
@@ -200,18 +197,21 @@ void jurischain_gen(jurischain_ctx_t *challenge, uint8_t d, const void *seed, si
   challenge->payload[HASH_LEN] = d;
 }
 
-jurischain_ctx_t *jurischain_init() {
-    jurischain_ctx_t *ptr = NULL;
-    ptr = (jurischain_ctx_t *)malloc(sizeof(jurischain_ctx_t));
+jurischain_ctx_t *jurischain_init(void) {
+    jurischain_ctx_t *ptr = (jurischain_ctx_t *)malloc(sizeof(jurischain_ctx_t));
+    if (ptr) memset(ptr, 0, sizeof(jurischain_ctx_t));
     return ptr;
 }
 
 void jurischain_destroy(jurischain_ctx_t **ptr) {
+    if (!ptr || !*ptr) return;
+    memset(*ptr, 0, sizeof(jurischain_ctx_t));
     free(*ptr);
     *ptr = NULL;
 }
 
 int jurischain_verify(jurischain_ctx_t *challenge) {
+  if (!challenge) return 0;
   uint8_t hash[HASH_LEN] = { 0, },
           d = 0,
           hash_concat[HASH_LEN * 2] = { 0, },
@@ -237,6 +237,7 @@ int jurischain_verify(jurischain_ctx_t *challenge) {
 }
 
 int jurischain_try(jurischain_ctx_t *challenge) {
+  if (!challenge) return 0;
   uint8_t rand_hash[HASH_LEN] = { 0, };
   sha3(challenge->seed, HASH_LEN, rand_hash, HASH_LEN);
   memcpy(challenge->seed, rand_hash, HASH_LEN);

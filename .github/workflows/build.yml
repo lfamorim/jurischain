@@ -1,17 +1,20 @@
-on: push
+name: Build & Test
+
+on: [push, pull_request]
 
 jobs:
-  test:
+  build-asm:
+    name: ASM.js Build
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [12, 14, 16, 17]
     steps:
-    - uses: actions/checkout@v2
-    - uses: mymindstorm/setup-emsdk@v9
-    - run: make
-    - uses: actions/setup-node@v2
-      with:
-        node-version: ${{ matrix.node-version }}
-    - run: npm install
-    - run: npm test
+      - uses: actions/checkout@v4
+      - uses: mymindstorm/setup-emsdk@v14
+      - run: make all
+      - run: node dist/jurischain-cli.js 5 CI_Seed
+
+  test-docker:
+    name: Docker Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: ./build.sh test

@@ -1,0 +1,51 @@
+{
+  "name": "@credithub/jurischain-node",
+  "version": "1.0.1",
+  "description": "Native Node.js binding for JurisChain Proof-of-Work CAPTCHA. Challenges terminals instead of humans to mitigate DDoS attacks.",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "require": "./index.js"
+    }
+  },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "main.cpp",
+    "jurischain.h",
+    "binding.gyp"
+  ],
+  "scripts": {
+    "install": "node-gyp rebuild",
+    "rebuild": "node-gyp rebuild",
+    "test": "node -e \"const { Jurischain } = require('.'); const j = new Jurischain(1, 'test'); console.log('OK:', j.readChallenge());\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/credithub/jurischain.git"
+  },
+  "keywords": [
+    "captcha",
+    "proof-of-work",
+    "sha3",
+    "blockchain"
+  ],
+  "author": "CreditHub <tech@credithub.com.br>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/credithub/jurischain/issues"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "dependencies": {
+    "bindings": "^1.5.0",
+    "nan": "^2.19.0"
+  },
+  "devDependencies": {
+    "node-gyp": "^10.0.0"
+  },
+  "homepage": "https://github.com/credithub/jurischain#readme"
+}

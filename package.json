@@ -1,12 +1,26 @@
 {
-  "name": "jurischain",
-  "version": "1.0.4",
+  "name": "@credithub/jurischain",
+  "version": "1.0.5",
   "description": "Instead of challenging the humans at the terminals, it would be better to challenge the terminals. It is about balancing the load with customers so as not to suffer a DDoS attack. Inspired by blockchain technology.",
   "main": "dist/jurischain.js",
-  "browser": "dist/jurischain.js",
-  "bin": {
-    "jurischain-cli": "./jurischain-cli"
+  "browser": "bindings/browser/jurischain-promise.js",
+  "types": "bindings/browser/jurischain-promise.d.ts",
+  "exports": {
+    ".": {
+      "browser": "./bindings/browser/jurischain-promise.js",
+      "default": "./dist/jurischain.js"
+    },
+    "./promise": "./bindings/browser/jurischain-promise.js",
+    "./bundle": "./dist/jurischain-bundle.js",
+    "./cli": "./dist/jurischain-cli.js"
   },
+  "files": [
+    "dist/",
+    "include/",
+    "bindings/browser/",
+    "examples/",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "make",
     "test": "./jurischain-cli",
@@ -14,7 +28,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bipbop/jurischain.git"
+    "url": "git+https://github.com/credithub/jurischain.git"
   },
   "keywords": [
     "captcha",
@@ -22,12 +36,15 @@
     "jurischain",
     "blockchain"
   ],
-  "author": "contato@bipbop.com.br",
+  "author": "CreditHub <tech@credithub.com.br>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/bipbop/jurischain/issues"
+    "url": "https://github.com/credithub/jurischain/issues"
   },
-  "homepage": "https://github.com/bipbop/jurischain#readme",
+  "homepage": "https://github.com/credithub/jurischain#readme",
+  "engines": {
+    "node": ">=14.0.0"
+  },
   "devDependencies": {
     "@types/express": "^4.17.13",
     "@types/human-interval": "^1.0.0",

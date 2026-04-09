@@ -6,57 +6,46 @@
 #include "string.h"
 
 jurischain_ctx_t pow_i;
-uint8_t trys = 0;
-size_t len = 32;
 
 char *loading = "<div class='jurischain-captcha__marker'><div "
                 "class='jurischain-captcha__checkbox--loading'></div></div>"
                 "<div class='jurischain-captcha__text'>Aguarde enquanto validamos "
-                "seu acesso.</span></div>";
+                "seu acesso.</div>";
 
 char *completed = "<div class='jurischain-captcha__marker'><div "
                   "class='jurischain-captcha__checkbox--completed'></div></div>"
                   "<div class='jurischain-captcha__text'>Seu acesso foi validado "
-                  "com sucesso.</span></div>";
+                  "com sucesso.</div>";
 
 EM_JS(void, jurischainElement, (const char *content, int solved, char *challenge), {
   if (solved) {
-    var event;
-    var solution = UTF8ToString(challenge, 32);
-    if (typeof CustomEvent === 'function') {
-      event = new CustomEvent('jurischain', {'detail' : solution });
-    } else {
-      event = document.createEvent('CustomEvent');
-      event.initCustomEvent('jurischain', true, false, solution);
-    }
+    const solution = UTF8ToString(challenge, 32);
+    const event = new CustomEvent('jurischain', { detail: solution });
     document.dispatchEvent(event);
   }
 
-  var jurischainElement = document.getElementById('jurischain-captcha');
-  if (jurischainElement) {
-    /* adiciona o conteúdo */
-    jurischainElement.innerHTML = UTF8ToString(content);
+  const el = document.getElementById('jurischain-captcha');
+  if (el) {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(UTF8ToString(content), 'text/html');
+    el.replaceChildren(...doc.body.childNodes);
     if (solved) {
-      /* existe o elemento e foi resolvido, logo haverá um input */
-      var input = document.createElement("input");
-      input.type = "hidden";
-      input.name = "jurischain";
-      input.value = solution;
-      jurischainElement.appendChild(input);
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = 'jurischain';
+      input.value = UTF8ToString(challenge, 32);
+      el.appendChild(input);
     }
   }
-
 })
 
 void EMSCRIPTEN_KEEPALIVE try_solve() {
-  for (int i = 0; i < 15; i++) {
+  for (int attempt = 0; attempt < 15; attempt++) {
     if (!jurischain_try(&pow_i))
       continue;
-    char challenge[(HASH_LEN * 2) + 1] = {
-        0,
-    };
-    for (int i = 0; i < HASH_LEN; i++)
-      sprintf(challenge + (i * 2), "%02hhX", pow_i.seed[i]);
+    char challenge[(HASH_LEN * 2) + 1] = { 0, };
+    for (int j = 0; j < HASH_LEN; j++)
+      snprintf(challenge + (j * 2), 3, "%02hhX", pow_i.seed[j]);
     jurischainElement(completed, 1, challenge);
     emscripten_force_exit(0);
     return;

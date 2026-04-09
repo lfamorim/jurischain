@@ -1,0 +1,193 @@
+/* ═══════════════════════════════════════════════════════════════════
+   JurisChain Captcha – Modern UI
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+  --jc-font: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --jc-bg: #ffffff;
+  --jc-border: #e0e0e0;
+  --jc-border-hover: #bdbdbd;
+  --jc-text: #1a1a2e;
+  --jc-text-muted: #6b7280;
+  --jc-accent: #4f46e5;
+  --jc-accent-light: #818cf8;
+  --jc-success: #10b981;
+  --jc-radius: 8px;
+  --jc-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --jc-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --jc-transition: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --jc-bg: #1e1e2e;
+    --jc-border: #313244;
+    --jc-border-hover: #45475a;
+    --jc-text: #cdd6f4;
+    --jc-text-muted: #a6adc8;
+    --jc-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --jc-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.4);
+  }
+}
+
+/* ── Widget Container ────────────────────────────────────────────── */
+
+#jurischain-captcha {
+  all: initial;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 280px;
+  padding: 14px 18px;
+  border-radius: var(--jc-radius);
+  border: 1.5px solid var(--jc-border);
+  background: var(--jc-bg);
+  color: var(--jc-text);
+  font-family: var(--jc-font);
+  font-size: 14px;
+  line-height: 1.4;
+  box-shadow: var(--jc-shadow);
+  transition: border-color var(--jc-transition), box-shadow var(--jc-transition);
+  cursor: default;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+#jurischain-captcha:hover {
+  border-color: var(--jc-border-hover);
+  box-shadow: var(--jc-shadow-hover);
+}
+
+/* ── Checkbox Area ───────────────────────────────────────────────── */
+
+.jurischain-captcha__marker {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+}
+
+/* Loading spinner */
+.jurischain-captcha__checkbox--loading {
+  width: 24px;
+  height: 24px;
+  border: 2.5px solid var(--jc-border);
+  border-top-color: var(--jc-accent);
+  border-radius: 50%;
+  animation: jc-spin 0.8s linear infinite;
+}
+
+/* Completed checkmark */
+.jurischain-captcha__checkbox--completed {
+  width: 28px;
+  height: 28px;
+  position: relative;
+  animation: jc-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.jurischain-captcha__checkbox--completed::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--jc-success);
+  opacity: 0.12;
+}
+
+.jurischain-captcha__checkbox--completed svg {
+  width: 28px;
+  height: 28px;
+}
+
+.jurischain-captcha__checkbox--completed .jc-check-circle {
+  fill: none;
+  stroke: var(--jc-success);
+  stroke-width: 2;
+  stroke-dasharray: 76;
+  stroke-dashoffset: 76;
+  animation: jc-draw-circle 0.4s ease-out 0.1s forwards;
+}
+
+.jurischain-captcha__checkbox--completed .jc-check-mark {
+  fill: none;
+  stroke: var(--jc-success);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 18;
+  stroke-dashoffset: 18;
+  animation: jc-draw-check 0.3s ease-out 0.45s forwards;
+}
+
+/* ── Text Area ───────────────────────────────────────────────────── */
+
+.jurischain-captcha__text {
+  flex: 1;
+  min-width: 0;
+}
+
+.jurischain-captcha__label {
+  display: block;
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--jc-text);
+}
+
+.jurischain-captcha__sublabel {
+  display: block;
+  font-size: 11px;
+  color: var(--jc-text-muted);
+  margin-top: 2px;
+  letter-spacing: 0.01em;
+}
+
+/* ── Branding ────────────────────────────────────────────────────── */
+
+.jurischain-captcha__brand {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  opacity: 0.5;
+  transition: opacity var(--jc-transition);
+}
+
+#jurischain-captcha:hover .jurischain-captcha__brand {
+  opacity: 0.7;
+}
+
+.jurischain-captcha__brand svg {
+  width: 20px;
+  height: 20px;
+}
+
+.jurischain-captcha__brand-text {
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--jc-text-muted);
+}
+
+/* ── Animations ──────────────────────────────────────────────────── */
+
+@keyframes jc-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes jc-pop {
+  0%   { transform: scale(0); opacity: 0; }
+  60%  { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes jc-draw-circle {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes jc-draw-check {
+  to { stroke-dashoffset: 0; }
+}

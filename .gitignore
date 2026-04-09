@@ -58,5 +58,8 @@ dkms.conf
 env/
 stats/
 
+# Build artifacts
+dist/
+
 # Node modules
 node_modules/

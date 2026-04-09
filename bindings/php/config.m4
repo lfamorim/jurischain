@@ -5,5 +5,3 @@ if test "$PHP_JURISCHAIN" != "no"; then
   AC_DEFINE(HAVE_JURISCHAIN, 1, [ Have jurischain support ])
   PHP_NEW_EXTENSION(jurischain, jurischain.c, $ext_shared)
 fi
-
--ljurischain

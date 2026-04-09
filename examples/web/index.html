@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>JurisChain – Proof-of-Work Captcha</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="./style.css" rel="stylesheet" />
+  <style>
+    /* ── Demo Page Layout ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Inter', system-ui, sans-serif;
+      background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+      color: #e0e0e0;
+      padding: 2rem;
+    }
+
+    .demo-container {
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2.5rem;
+    }
+
+    /* Header */
+    .demo-header {
+      text-align: center;
+    }
+    .demo-header h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #818cf8, #a78bfa, #c084fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .demo-header p {
+      margin-top: 0.5rem;
+      font-size: 0.875rem;
+      color: #a1a1aa;
+      line-height: 1.5;
+    }
+
+    /* Captcha wrapper */
+    .demo-captcha {
+      display: flex;
+      justify-content: center;
+    }
+
+    /* Result card */
+    .demo-result {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+    .demo-result.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .demo-result__header {
+      padding: 0.75rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #a78bfa;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .demo-result__body {
+      padding: 1rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      line-height: 1.7;
+      color: #c4b5fd;
+      word-break: break-all;
+      white-space: pre-wrap;
+    }
+    .demo-result__body .key { color: #6ee7b7; }
+    .demo-result__body .val { color: #e0e0e0; }
+
+    /* Footer */
+    .demo-footer {
+      text-align: center;
+      font-size: 0.7rem;
+      color: #52525b;
+    }
+    .demo-footer a {
+      color: #818cf8;
+      text-decoration: none;
+    }
+    .demo-footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="demo-container">
+    <!-- Header -->
+    <div class="demo-header">
+      <h1>JurisChain</h1>
+      <p>SHA3-based Proof-of-Work captcha.<br/>No tracking. No third parties. Open source.</p>
+    </div>
+
+    <!-- Captcha Widget -->
+    <div class="demo-captcha">
+      <div id="jurischain-captcha">
+        <div class="jurischain-captcha__marker">
+          <div class="jurischain-captcha__checkbox--loading"></div>
+        </div>
+        <div class="jurischain-captcha__text">
+          <span class="jurischain-captcha__label">Verifying...</span>
+          <span class="jurischain-captcha__sublabel">Proof-of-Work challenge</span>
+        </div>
+        <div class="jurischain-captcha__brand">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          <span class="jurischain-captcha__brand-text">JurisChain</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Result Panel -->
+    <div class="demo-result" id="result-panel">
+      <div class="demo-result__header">Challenge Result</div>
+      <div class="demo-result__body" id="result-body"></div>
+    </div>
+
+    <!-- Footer -->
+    <div class="demo-footer">
+      <a href="https://github.com/credithub/jurischain" target="_blank" rel="noopener">github.com/credithub/jurischain</a> · MIT License
+    </div>
+  </div>
+
+  <script src="./dist/jurischain-bundle.js"></script>
+  <script>
+    (async function () {
+      const widget = document.getElementById('jurischain-captcha');
+      const marker = widget.querySelector('.jurischain-captcha__marker');
+      const label  = widget.querySelector('.jurischain-captcha__label');
+      const sub    = widget.querySelector('.jurischain-captcha__sublabel');
+      const panel  = document.getElementById('result-panel');
+      const body   = document.getElementById('result-body');
+
+      try {
+        const t0 = performance.now();
+        const result = await solveJurischain({
+          seed: 'DemoSeed_' + Date.now(),
+          difficulty: 10,
+          timeout: 30000,
+        });
+        const elapsed = ((performance.now() - t0) / 1000).toFixed(2);
+
+        /* Update widget → success state */
+        marker.innerHTML =
+          '<div class="jurischain-captcha__checkbox--completed">' +
+            '<svg viewBox="0 0 28 28">' +
+              '<circle class="jc-check-circle" cx="14" cy="14" r="12"/>' +
+              '<polyline class="jc-check-mark" points="9 14.5 12.5 18 19 10.5"/>' +
+            '</svg>' +
+          '</div>';
+        label.textContent = 'Verified';
+        sub.textContent   = elapsed + 's · ' + result.length / 2 + ' bytes';
+
+        /* Show result panel */
+        body.innerHTML =
+          '<span class="key">hash</span>  <span class="val">' + result + '</span>\n' +
+          '<span class="key">time</span>  <span class="val">' + elapsed + 's</span>\n' +
+          '<span class="key">algo</span>  <span class="val">SHA3-256 (Keccak)</span>';
+        panel.classList.add('visible');
+
+      } catch (err) {
+        label.textContent = 'Failed';
+        sub.textContent   = err.message || 'Unknown error';
+        marker.innerHTML  = '<div style="color:#ef4444;font-size:24px">✕</div>';
+      }
+    })();
+  </script>
+</body>
+</html>
