@@ -19,18 +19,18 @@ char *completed = "<div class='jurischain-captcha__marker'><div "
 
 EM_JS(void, jurischainElement, (const char *content, int solved, char *challenge), {
   if (solved) {
-    const solution = UTF8ToString(challenge, 64);
-    const event = new CustomEvent('jurischain', { detail: solution });
-    document.dispatchEvent(event);
+    var solution = UTF8ToString(challenge, 64);
+    var evt;
+    try { evt = new CustomEvent('jurischain', { detail: solution }); }
+    catch(e) { evt = document.createEvent('CustomEvent'); evt.initCustomEvent('jurischain', false, false, solution); }
+    document.dispatchEvent(evt);
   }
 
-  const el = document.getElementById('jurischain-captcha');
+  var el = document.getElementById('jurischain-captcha');
   if (el) {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(UTF8ToString(content), 'text/html');
-    el.replaceChildren(...doc.body.childNodes);
+    el.innerHTML = UTF8ToString(content);
     if (solved) {
-      const input = document.createElement('input');
+      var input = document.createElement('input');
       input.type = 'hidden';
       input.name = 'jurischain';
       input.value = UTF8ToString(challenge, 64);

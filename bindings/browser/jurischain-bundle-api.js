@@ -22,7 +22,7 @@ function solveJurischain(options) {
   }
 
   var diff = Number(difficulty);
-  if (!Number.isInteger(diff) || diff < 1 || diff > 255) {
+  if (diff !== (diff | 0) || diff < 1 || diff > 255) {
     return Promise.reject(new RangeError('difficulty must be an integer between 1 and 255'));
   }
 
@@ -47,7 +47,7 @@ function solveJurischain(options) {
       if (timerId) clearTimeout(timerId);
     }
 
-    document.addEventListener('jurischain', onSolved, { once: true });
+    document.addEventListener('jurischain', onSolved);
 
     if (timeout > 0) {
       timerId = setTimeout(function () {
