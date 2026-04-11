@@ -90,4 +90,9 @@ function solveJurischain(options) {
   return _solveQueue;
 }
 
-window.solveJurischain = solveJurischain;
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { solveJurischain: solveJurischain };
+} else if (typeof define === 'function' && define.amd) {
+  define(function () { return { solveJurischain: solveJurischain }; });
+}
+root.solveJurischain = solveJurischain;

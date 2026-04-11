@@ -30,11 +30,11 @@ js-module: $(DISTDIR)
 
 bundle: js-module
 	@echo "Bundling $(DISTDIR)/jurischain-bundle.js..."
-	@printf '(function(){"use strict";\n' > $(DISTDIR)/jurischain-bundle.js
+	@printf '(function(root){"use strict";\n' > $(DISTDIR)/jurischain-bundle.js
 	@cat $(DISTDIR)/jurischain-module.js >> $(DISTDIR)/jurischain-bundle.js
 	@printf '\n' >> $(DISTDIR)/jurischain-bundle.js
 	@cat $(WEBDIR)/jurischain-bundle-api.js >> $(DISTDIR)/jurischain-bundle.js
-	@printf '\n})();\n' >> $(DISTDIR)/jurischain-bundle.js
+	@printf '\n})(typeof self!=="undefined"?self:typeof global!=="undefined"?global:this);\n' >> $(DISTDIR)/jurischain-bundle.js
 	@echo "Bundle created: $(DISTDIR)/jurischain-bundle.js ($$(wc -c < $(DISTDIR)/jurischain-bundle.js) bytes)"
 
 cli-js: $(DISTDIR)

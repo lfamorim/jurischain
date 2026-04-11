@@ -5,6 +5,13 @@
   "main": "dist/jurischain-bundle.js",
   "browser": "dist/jurischain-bundle.js",
   "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "require": "./dist/jurischain-bundle.js",
+      "default": "./dist/jurischain-bundle.js"
+    }
+  },
   "files": [
     "dist/jurischain-bundle.js",
     "index.d.ts",
