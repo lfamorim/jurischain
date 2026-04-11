@@ -12,7 +12,7 @@
   ],
   "scripts": {
     "build": "./build.sh build",
-    "transpile": "swc dist/jurischain-bundle.js -o dist/jurischain-bundle.js -C jsc.target=es5 -C module.type=commonjs",
+    "transpile": "babel dist/jurischain-bundle.js -o dist/jurischain-bundle.js",
     "minify": "npm run transpile && terser dist/jurischain-bundle.js --ecma 5 --compress passes=3,dead_code,collapse_vars,reduce_vars --mangle -o dist/jurischain-bundle.js",
     "postbuild": "npm run minify",
     "test": "npm run test:browser",
@@ -41,9 +41,10 @@
     "node": ">=14.0.0"
   },
   "devDependencies": {
+    "@babel/cli": "^7.28.6",
+    "@babel/core": "^7.29.0",
+    "@babel/preset-env": "^7.29.2",
     "@playwright/test": "^1.59.1",
-    "@swc/cli": "^0.8.1",
-    "@swc/core": "^1.15.24",
     "@types/express": "^4.17.13",
     "@types/human-interval": "^1.0.0",
     "@types/jest": "^27.0.2",
