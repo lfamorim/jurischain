@@ -30,7 +30,7 @@ js-module: $(DISTDIR)
 
 bundle: js-module
 	@echo "Bundling $(DISTDIR)/jurischain-bundle.js..."
-	@printf '(function(){\"use strict\";\n' > $(DISTDIR)/jurischain-bundle.js
+	@printf '(function(){"use strict";\n' > $(DISTDIR)/jurischain-bundle.js
 	@cat $(DISTDIR)/jurischain-module.js >> $(DISTDIR)/jurischain-bundle.js
 	@printf '\n' >> $(DISTDIR)/jurischain-bundle.js
 	@cat $(WEBDIR)/jurischain-bundle-api.js >> $(DISTDIR)/jurischain-bundle.js

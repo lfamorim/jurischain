@@ -1,9 +1,9 @@
 #include <stdint.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "emscripten.h"
 #include "jurischain.h"
-#include "string.h"
 
 jurischain_ctx_t pow_i;
 
@@ -19,7 +19,7 @@ char *completed = "<div class='jurischain-captcha__marker'><div "
 
 EM_JS(void, jurischainElement, (const char *content, int solved, char *challenge), {
   if (solved) {
-    const solution = UTF8ToString(challenge, 32);
+    const solution = UTF8ToString(challenge, 64);
     const event = new CustomEvent('jurischain', { detail: solution });
     document.dispatchEvent(event);
   }
@@ -33,7 +33,7 @@ EM_JS(void, jurischainElement, (const char *content, int solved, char *challenge
       const input = document.createElement('input');
       input.type = 'hidden';
       input.name = 'jurischain';
-      input.value = UTF8ToString(challenge, 32);
+      input.value = UTF8ToString(challenge, 64);
       el.appendChild(input);
     }
   }
@@ -53,16 +53,14 @@ void EMSCRIPTEN_KEEPALIVE try_solve() {
 }
 
 int main() {
-  if (!emscripten_run_script_int(
-          "!document || !window.jurischain || typeof "
-          "window.jurischain.seed !== 'string' || typeof "
-          "window.jurischain.difficulty !== 'string'"))
+  char *seed = emscripten_run_script_string("window.jurischain.seed || ''");
+  int difficulty = emscripten_run_script_int("window.jurischain.difficulty || 0");
+  
+  if (!seed || strlen(seed) == 0 || difficulty < 1 || difficulty > 255)
     return 1;
-  char *seed = emscripten_run_script_string("window.jurischain.seed");
-  uint8_t difficulty =
-      emscripten_run_script_int("window.jurischain.difficulty");
+  
   jurischainElement(loading, 0, NULL);
-  jurischain_gen(&pow_i, difficulty, seed, strlen(seed));
+  jurischain_gen(&pow_i, (uint8_t)difficulty, seed, strlen(seed));
   emscripten_set_main_loop(try_solve, 0, 0);
   return 0;
 }

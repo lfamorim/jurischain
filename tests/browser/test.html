@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>JurisChain Browser Test</title>
+</head>
+<body>
+  <h1>JurisChain Browser Test</h1>
+  <div id="jurischain-captcha"></div>
+  <div id="status">Loading...</div>
+  
+  <script src="/dist/jurischain-bundle.js"></script>
+  <script>
+    window.runTest = function(seed, difficulty, timeout) {
+      return solveJurischain({ seed: seed, difficulty: difficulty, timeout: timeout })
+        .then(function(result) { return { success: true, result: result }; })
+        .catch(function(err) { return { success: false, error: err.message }; });
+    };
+    document.getElementById('status').textContent = 'Ready';
+  </script>
+</body>
+</html>

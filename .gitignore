@@ -63,3 +63,8 @@ dist/
 
 # Node modules
 node_modules/
+
+# Test artifacts
+test-results/
+playwright-report/
+*.tgz

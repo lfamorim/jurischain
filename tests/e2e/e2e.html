@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>E2E Test</title></head>
+<body>
+  <div id="jurischain-captcha"></div>
+  <div id="status">Loading...</div>
+  <script src="/dist/jurischain-bundle.js"></script>
+  <script>
+    window.solve = function(seed, difficulty, timeout) {
+      return solveJurischain({ seed: seed, difficulty: difficulty, timeout: timeout })
+        .then(function(r) { return { success: true, result: r }; })
+        .catch(function(e) { return { success: false, error: e.message }; });
+    };
+    document.getElementById('status').textContent = 'Ready';
+  </script>
+</body>
+</html>

@@ -28,6 +28,8 @@ RUN phpize && \
 RUN php -m | grep jurischain
 
 COPY tests/test_php.php /src/tests/test_php.php
+COPY tests/e2e/php_generate.php /src/tests/e2e/php_generate.php
+COPY tests/e2e/php_verify.php /src/tests/e2e/php_verify.php
 CMD ["php", "-d", "assert.exception=1", "/src/tests/test_php.php"]
 
 # -----------------------------------------------------------------------------
