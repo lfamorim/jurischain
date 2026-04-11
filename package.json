@@ -1,24 +1,13 @@
 {
   "name": "@credithub/jurischain",
-  "version": "1.0.5",
+  "version": "1.1.0",
   "description": "Instead of challenging the humans at the terminals, it would be better to challenge the terminals. It is about balancing the load with customers so as not to suffer a DDoS attack. Inspired by blockchain technology.",
-  "main": "dist/jurischain.js",
-  "browser": "bindings/browser/jurischain-promise.js",
-  "types": "bindings/browser/jurischain-promise.d.ts",
-  "exports": {
-    ".": {
-      "browser": "./bindings/browser/jurischain-promise.js",
-      "default": "./dist/jurischain.js"
-    },
-    "./promise": "./bindings/browser/jurischain-promise.js",
-    "./bundle": "./dist/jurischain-bundle.js",
-    "./cli": "./dist/jurischain-cli.js"
-  },
+  "main": "dist/jurischain-bundle.js",
+  "browser": "dist/jurischain-bundle.js",
+  "types": "index.d.ts",
   "files": [
-    "dist/",
-    "include/",
-    "bindings/browser/",
-    "examples/",
+    "dist/jurischain-bundle.js",
+    "index.d.ts",
     "LICENSE"
   ],
   "scripts": {
