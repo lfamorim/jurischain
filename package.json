@@ -11,12 +11,14 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "make",
+    "build": "./build.sh build",
+    "minify": "terser dist/jurischain-bundle.js --compress passes=3,dead_code,collapse_vars,reduce_vars --mangle -o dist/jurischain-bundle.js",
+    "postbuild": "npm run minify",
     "test": "npm run test:browser",
     "test:browser": "npx playwright test",
     "test:docker": "./build.sh test",
-    "prepublishOnly": "npm run test:browser",
-    "prepack": "npm run test:browser"
+    "prepublishOnly": "npm run minify && npm run test:browser",
+    "prepack": "npm run minify && npm run test:browser"
   },
   "repository": {
     "type": "git",
@@ -51,6 +53,7 @@
     "playwright": "^1.59.1",
     "selenium-webdriver": "^4.0.0",
     "serve": "^14.2.6",
+    "terser": "^5.46.1",
     "ts-jest": "^27.0.7",
     "typescript": "^4.4.4"
   }
