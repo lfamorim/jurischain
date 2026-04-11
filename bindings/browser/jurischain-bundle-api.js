@@ -5,35 +5,26 @@
  * inside an IIFE by the build system. _JurischainASM is available
  * in the same closure scope.
  *
+ * Calls are serialized: if a solve is already in progress, subsequent
+ * calls wait in a queue and execute one at a time.
+ *
  * @param {Object}  options
  * @param {string}  options.seed       - Random seed for the challenge
  * @param {number}  options.difficulty  - Difficulty level (1-255)
  * @param {number}  [options.timeout]  - Optional timeout in ms (0 = no timeout)
  * @returns {Promise<string>} The hex-encoded solution hash
  */
-function solveJurischain(options) {
-  var opts = options || {};
-  var seed = opts.seed;
-  var difficulty = opts.difficulty;
-  var timeout = opts.timeout || 0;
+var _solveQueue = Promise.resolve();
 
-  if (typeof seed !== 'string' || seed.length === 0) {
-    return Promise.reject(new TypeError('seed must be a non-empty string'));
-  }
-
-  var diff = Number(difficulty);
-  if (diff !== (diff | 0) || diff < 1 || diff > 255) {
-    return Promise.reject(new RangeError('difficulty must be an integer between 1 and 255'));
-  }
-
-  window.jurischain = Object.freeze({
-    seed: seed,
-    difficulty: String(diff),
-  });
-
+function _solve(seed, diff, timeout) {
   return new Promise(function (resolve, reject) {
     var settled = false;
     var timerId;
+
+    window.jurischain = Object.freeze({
+      seed: seed,
+      difficulty: String(diff),
+    });
 
     function onSolved(event) {
       if (settled) return;
@@ -73,6 +64,30 @@ function solveJurischain(options) {
       }
     }
   });
+}
+
+function solveJurischain(options) {
+  var opts = options || {};
+  var seed = opts.seed;
+  var difficulty = opts.difficulty;
+  var timeout = opts.timeout || 0;
+
+  if (typeof seed !== 'string' || seed.length === 0) {
+    return Promise.reject(new TypeError('seed must be a non-empty string'));
+  }
+
+  var diff = Number(difficulty);
+  if (diff !== (diff | 0) || diff < 1 || diff > 255) {
+    return Promise.reject(new RangeError('difficulty must be an integer between 1 and 255'));
+  }
+
+  _solveQueue = _solveQueue.then(function () {
+    return _solve(seed, diff, timeout);
+  }, function () {
+    return _solve(seed, diff, timeout);
+  });
+
+  return _solveQueue;
 }
 
 window.solveJurischain = solveJurischain;
