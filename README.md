@@ -217,4 +217,4 @@ PRs welcome. Please ensure all tests pass before submitting.
 
 ## License
 
-[MIT](LICENSE) — created by [CreditHub](https://credithub.com.br), maintained by [Lucas Fernando Amorim](https://github.com/lfamorim)
+[MIT](LICENSE) — created by BIPBOP, maintained by [Lucas Fernando Amorim](https://github.com/lfamorim) and [CreditHub](https://credithub.com.br).
